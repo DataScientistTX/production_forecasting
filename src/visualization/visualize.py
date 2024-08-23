@@ -8,6 +8,7 @@ def ensure_output_dir(output_dir):
     """Ensure the output directory exists."""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    print(f"Output directory ensured: {output_dir}")
 
 def plot_oil_production(df, well_name, output_dir):
     ensure_output_dir(output_dir)
@@ -18,7 +19,13 @@ def plot_oil_production(df, well_name, output_dir):
     fig.update_layout(title=f'Oil Production Over Time for {well_name}',
                       xaxis_title='Months Since Production',
                       yaxis_title='Oil Production')
-    fig.write_image(os.path.join(output_dir, f'oil_production_{well_name}.png'))
+    output_file = os.path.join(output_dir, f'oil_production_{well_name}.png')
+    fig.write_image(output_file)
+    print(f"Attempted to save oil production plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
 
 def plot_top_5_wells(df, output_dir):
     ensure_output_dir(output_dir)
@@ -33,8 +40,14 @@ def plot_top_5_wells(df, output_dir):
     plt.xlabel('Cumulative Oil Production (log scale)')
     plt.ylabel('Oil Production (log scale)')
     plt.title('Log-log Plot of Oil Production Over Time for Top 5 Wells')
-    plt.savefig(os.path.join(output_dir, 'top_5_wells.png'))
+    output_file = os.path.join(output_dir, 'top_5_wells.png')
+    plt.savefig(output_file)
     plt.close()
+    print(f"Attempted to save top 5 wells plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
 
 def plot_cumulative_production(df_filtered, output_dir):
     ensure_output_dir(output_dir)
@@ -43,8 +56,14 @@ def plot_cumulative_production(df_filtered, output_dir):
     plt.xlabel('Months Since Production')
     plt.ylabel('Cumulative Oil Production')
     plt.title('Cumulative Oil Production Over Time for Top 5 Wells')
-    plt.savefig(os.path.join(output_dir, 'cumulative_production.png'))
+    output_file = os.path.join(output_dir, 'cumulative_production.png')
+    plt.savefig(output_file)
     plt.close()
+    print(f"Attempted to save cumulative production plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
 
 def plot_total_production(series, production_type, output_dir):
     ensure_output_dir(output_dir)
@@ -56,7 +75,13 @@ def plot_total_production(series, production_type, output_dir):
     fig.update_layout(title=f'Total {production_type.capitalize()} Production Over Time',
                       xaxis_title='Timestamp',
                       yaxis_title=f'Total {production_type.capitalize()} Production')
-    fig.write_image(os.path.join(output_dir, f'total_{production_type}_production.png'))
+    output_file = os.path.join(output_dir, f'total_{production_type}_production.png')
+    fig.write_image(output_file)
+    print(f"Attempted to save total {production_type} production plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
 
 def plot_producing_wells(series, output_dir):
     ensure_output_dir(output_dir)
@@ -69,7 +94,13 @@ def plot_producing_wells(series, output_dir):
     fig.update_layout(title='Number of producing wells',
                       xaxis_title='Timestamp',
                       yaxis_title='Number of producing wells')
-    fig.write_image(os.path.join(output_dir, 'producing_wells.png'))
+    output_file = os.path.join(output_dir, 'producing_wells.png')
+    fig.write_image(output_file)
+    print(f"Attempted to save producing wells plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
 
 def plot_gor(series, output_dir):
     ensure_output_dir(output_dir)
@@ -81,7 +112,13 @@ def plot_gor(series, output_dir):
     fig.update_layout(title='Total GOR Over Time',
                       xaxis_title='Timestamp',
                       yaxis_title='Total GOR')
-    fig.write_image(os.path.join(output_dir, 'gor.png'))
+    output_file = os.path.join(output_dir, 'gor.png')
+    fig.write_image(output_file)
+    print(f"Attempted to save GOR plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
 
 def plot_model_comparison(results_df, output_dir):
     ensure_output_dir(output_dir)
@@ -91,5 +128,11 @@ def plot_model_comparison(results_df, output_dir):
     plt.ylabel('RMSE')
     plt.xticks(rotation=45)
     plt.ylim(0, 40000)
-    plt.savefig(os.path.join(output_dir, 'model_comparison.png'))
+    output_file = os.path.join(output_dir, 'model_comparison.png')
+    plt.savefig(output_file)
     plt.close()
+    print(f"Attempted to save model comparison plot to: {output_file}")
+    if os.path.exists(output_file):
+        print(f"File successfully saved: {output_file}")
+    else:
+        print(f"Failed to save file: {output_file}")
