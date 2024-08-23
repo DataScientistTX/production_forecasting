@@ -31,7 +31,7 @@ sys.path.insert(0, project_root)
 # Import functions from your modules
 from src.data import load_and_preprocess_data
 from src.features import calculate_well_characteristics, filter_and_process_data
-from src.models import train_and_evaluate_models, load_chronos_pipeline
+from src.models import train_and_evaluate_models, load_chronos_pipeline, predict_oil_production
 from src.visualization import (
     plot_oil_production,
     plot_top_5_wells,
@@ -46,6 +46,7 @@ def main():
     try:
         # Specify the correct path to your test.csv file
         data_path = os.path.join(project_root, 'data', 'raw', 'test.csv')
+        output_dir = os.path.join(project_root, 'outputs', 'figures')
         
         # Load and preprocess data
         print(f"Loading and preprocessing data from {data_path}...")
@@ -61,34 +62,28 @@ def main():
 
         # Plotting
         print("Generating plots...")
-        plot_oil_production(df_filtered, 'FIELD92')
-        plot_top_5_wells(df_filtered)
-        plot_cumulative_production(df_filtered)
-        plot_total_production(series, 'oil')
-        plot_total_production(series, 'gas_total')
-        plot_producing_wells(series)
-        plot_gor(series)
+        plot_oil_production(df_filtered, 'FIELD92', output_dir)
+        plot_top_5_wells(df_filtered, output_dir)
+        plot_cumulative_production(df_filtered, output_dir)
+        plot_total_production(series, 'oil', output_dir)
+        plot_total_production(series, 'gas_total', output_dir)
+        plot_producing_wells(series, output_dir)
+        plot_gor(series, output_dir)
 
         # Model training and evaluation
         print("Training and evaluating models...")
         results_df = train_and_evaluate_models(df_filtered, well_list)
-        plot_model_comparison(results_df)
+        plot_model_comparison(results_df, output_dir)
 
         # Predict oil production for specific wells
         print("Predicting oil production for specific wells...")
         chronos_pipeline = load_chronos_pipeline()
         for well in ['FIELD4', 'FIELD55D', 'FIELD216', 'FIELD211']:
             print(f"Predicting for {well}...")
-            predict_oil_production(well, df, chronos_pipeline)
+            predict_oil_production(well, df, chronos_pipeline, output_dir)
 
-        print("Analysis complete!")
+        print("Analysis complete! All figures saved in the outputs/figures directory.")
     
-    except FileNotFoundError as e:
-        print(f"Error: File not found. Please check if the file exists and the path is correct.")
-        print(f"File path: {e.filename}")
-    except ImportError as e:
-        print(f"Error: Failed to import a required module. Please check if all dependencies are installed.")
-        print(f"Import error details: {str(e)}")
     except Exception as e:
         print(f"An unexpected error occurred: {str(e)}")
         import traceback
