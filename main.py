@@ -48,6 +48,10 @@ def main():
         data_path = os.path.join(project_root, 'data', 'raw', 'test.csv')
         output_dir = os.path.join(project_root, 'outputs', 'figures')
         
+        # Ensure output directory exists
+        os.makedirs(output_dir, exist_ok=True)
+        print(f"Output directory created/confirmed: {output_dir}")
+        
         # Load and preprocess data
         print(f"Loading and preprocessing data from {data_path}...")
         df, series = load_and_preprocess_data(data_path)
@@ -63,27 +67,60 @@ def main():
         # Plotting
         print("Generating plots...")
         plot_oil_production(df_filtered, 'FIELD92', output_dir)
+        print(f"Oil production plot should be saved in: {os.path.join(output_dir, 'oil_production_FIELD92.png')}")
+        
         plot_top_5_wells(df_filtered, output_dir)
+        print(f"Top 5 wells plot should be saved in: {os.path.join(output_dir, 'top_5_wells.png')}")
+        
         plot_cumulative_production(df_filtered, output_dir)
+        print(f"Cumulative production plot should be saved in: {os.path.join(output_dir, 'cumulative_production.png')}")
+        
         plot_total_production(series, 'oil', output_dir)
+        print(f"Total oil production plot should be saved in: {os.path.join(output_dir, 'total_oil_production.png')}")
+        
         plot_total_production(series, 'gas_total', output_dir)
+        print(f"Total gas production plot should be saved in: {os.path.join(output_dir, 'total_gas_total_production.png')}")
+        
         plot_producing_wells(series, output_dir)
+        print(f"Producing wells plot should be saved in: {os.path.join(output_dir, 'producing_wells.png')}")
+        
         plot_gor(series, output_dir)
+        print(f"GOR plot should be saved in: {os.path.join(output_dir, 'gor.png')}")
 
         # Model training and evaluation
         print("Training and evaluating models...")
-        results_df = train_and_evaluate_models(df_filtered, well_list)
+        use_subset = input("Do you want to use a subset of wells for faster processing? (y/n): ").lower() == 'y'
+        subset_size = 10 if use_subset else len(well_list)
+        results_df = train_and_evaluate_models(df_filtered, well_list[:subset_size], 
+                                               cache_dir=os.path.join(project_root, 'outputs', 'model_cache'),
+                                               use_subset=use_subset)
         plot_model_comparison(results_df, output_dir)
+        print(f"Model comparison plot should be saved in: {os.path.join(output_dir, 'model_comparison.png')}")
 
         # Predict oil production for specific wells
         print("Predicting oil production for specific wells...")
         chronos_pipeline = load_chronos_pipeline()
-        for well in ['FIELD4', 'FIELD55D', 'FIELD216', 'FIELD211']:
-            print(f"Predicting for {well}...")
-            predict_oil_production(well, df, chronos_pipeline, output_dir)
+        prediction_wells = ['FIELD4', 'FIELD55D', 'FIELD216', 'FIELD211']
+        for well in prediction_wells:
+            if well in well_list[:subset_size]:
+                print(f"Predicting for {well}...")
+                predict_oil_production(well, df, chronos_pipeline, output_dir)
+                print(f"Prediction plot for {well} should be saved in: {os.path.join(output_dir, f'forecast_{well}.png')}")
+            else:
+                print(f"Skipping prediction for {well} as it's not in the processed subset.")
 
-        print("Analysis complete! All figures saved in the outputs/figures directory.")
-    
+        print("Analysis complete! All figures should be saved in the outputs/figures directory.")
+        
+        print("Checking if files were actually saved:")
+        for filename in os.listdir(output_dir):
+            print(f"Found file: {filename}")
+
+    except FileNotFoundError as e:
+        print(f"Error: File not found. Please check if the file exists and the path is correct.")
+        print(f"File path: {e.filename}")
+    except ImportError as e:
+        print(f"Error: Failed to import a required module. Please check if all dependencies are installed.")
+        print(f"Import error details: {str(e)}")
     except Exception as e:
         print(f"An unexpected error occurred: {str(e)}")
         import traceback
